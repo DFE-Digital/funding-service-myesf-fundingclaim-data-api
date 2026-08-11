@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Pds.Audit.Api.Client.Interfaces;
 using Pds.Core.Logging;
@@ -10,7 +9,6 @@ using Pds.FundingClaim.Repositories.Interfaces;
 using Pds.FundingClaim.Services.Constants;
 using Pds.FundingClaim.Services.Implementations;
 using Pds.FundingClaim.Services.Interfaces;
-using Pds.FundingClaim.Services.Mapper;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -72,8 +70,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var mockMapper = new Mock<IMapper>();
-
             var fundingClaimDataService = new FundingClaimDataService(
                 null,
                 mockFundingClaimWindowRepository.Object,
@@ -81,8 +77,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mockMapper.Object);
+                mockAuditService.Object);
 
             //act
             await fundingClaimDataService.AutoWithdrawFundingClaims();
@@ -277,8 +272,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var mockMapper = new Mock<IMapper>();
-
             SetExpectationsForGetFundingClaimForSpecifiedIdentifier(mockFundingClaimRepository, createdFundingClaim1);
 
             SetExpectationsForGetFundingClaimForSpecifiedIdentifier(mockFundingClaimRepository, createdFundingClaim2);
@@ -300,8 +293,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mockMapper.Object);
+                mockAuditService.Object);
 
             //act
             await fundingClaimDataService.CreateFundingClaims(schemaFundingClaimList, lastFundingClaimWindow.Id);
@@ -452,7 +444,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
-            var mockMapper = new Mock<IMapper>();
 
             var fundingClaimDataService = new FundingClaimDataService(
                 mockSettingRepository.Object,
@@ -461,8 +452,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mockMapper.Object);
+                mockAuditService.Object);
 
             //act
             await fundingClaimDataService.CreateFundingClaims(schemaFundingClaimList, lastFundingClaimWindow.Id);
@@ -599,7 +589,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
-            var mockMapper = new Mock<IMapper>();
 
             var fundingClaimDataService = new FundingClaimDataService(
                 mockSettingRepository.Object,
@@ -608,8 +597,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mockMapper.Object);
+                mockAuditService.Object);
 
             //act
             await fundingClaimDataService.CreateFundingClaims(schemaFundingClaimList, lastFundingClaimWindow.Id);
@@ -751,7 +739,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
-            var mockMapper = new Mock<IMapper>();
 
             var fundingClaimDataService = new FundingClaimDataService(
                 mockSettingRepository.Object,
@@ -760,8 +747,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mockMapper.Object);
+                mockAuditService.Object);
 
             //act
             await fundingClaimDataService.CreateFundingClaims(schemaFundingClaimList, lastFundingClaimWindow.Id);
@@ -844,13 +830,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var cfg = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<FundingClaimProfile>();
-            });
-            cfg.AssertConfigurationIsValid();
-            var mapper = cfg.CreateMapper();
-
             MockAuditService();
 
             var fundingClaimDataService = new FundingClaimDataService(
@@ -860,8 +839,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mapper);
+                mockAuditService.Object);
 
             //act
             var result = await fundingClaimDataService.GetFundingClaimById(expectedFundingClaim.Id);
@@ -902,13 +880,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var cfg = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<FundingClaimProfile>();
-            });
-            cfg.AssertConfigurationIsValid();
-            var mapper = cfg.CreateMapper();
-
             MockAuditService();
 
             var fundingClaimDataService = new FundingClaimDataService(
@@ -918,8 +889,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mapper);
+                mockAuditService.Object);
 
             //act
             var result = await fundingClaimDataService.GetFundingClaimById(123);
@@ -969,13 +939,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var cfg = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<FundingClaimProfile>();
-            });
-            cfg.AssertConfigurationIsValid();
-            var mapper = cfg.CreateMapper();
-
             MockAuditService();
 
             var fundingClaimDataService = new FundingClaimDataService(
@@ -985,8 +948,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mapper);
+                mockAuditService.Object);
 
             //act
             var result = await fundingClaimDataService.GetPreviouslySignedVersionOfFundingClaimByCurrentFundingClaimId(expectedFundingClaim.Id);
@@ -1027,13 +989,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
             var mockEmailService = new Mock<IEmailService>();
             var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
 
-            var cfg = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<FundingClaimProfile>();
-            });
-            cfg.AssertConfigurationIsValid();
-            var mapper = cfg.CreateMapper();
-
             MockAuditService();
 
             var fundingClaimDataService = new FundingClaimDataService(
@@ -1043,8 +998,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 mockSystemProvider.Object,
                 mockEmailService.Object,
                 mockLogger.Object,
-                mockAuditService.Object,
-                mapper);
+                mockAuditService.Object);
 
             //act
             var result = await fundingClaimDataService.GetPreviouslySignedVersionOfFundingClaimByCurrentFundingClaimId(123);

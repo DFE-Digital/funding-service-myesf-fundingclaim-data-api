@@ -70,7 +70,6 @@ namespace Pds.FundingClaim.Api
                 cfg.Filters.Add(new AuthorizeFilter(RequireElevatedRightsPolicyName));
             });
 
-            services.AddAutoMapper(typeof(Services.Mapper.FundingClaimProfile));
             services.AddLoggerAdapter();
             services.AddPdsApplicationInsightsTelemetry(options => BuildAppInsightsConfiguration(options));
             services.AddSingleton<ITelemetryInitializer>(

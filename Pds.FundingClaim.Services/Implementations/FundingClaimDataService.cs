@@ -1,12 +1,13 @@
-﻿using AutoMapper;
-using Pds.Audit.Api.Client.Interfaces;
+﻿using Pds.Audit.Api.Client.Interfaces;
 using Pds.Core.Logging;
 using Pds.FundingClaim.Repositories.DataModels;
 using Pds.FundingClaim.Repositories.Enums;
 using Pds.FundingClaim.Repositories.Enums.Support;
 using Pds.FundingClaim.Repositories.Interfaces;
 using Pds.FundingClaim.Services.Constants;
+using Pds.FundingClaim.Services.Extensions;
 using Pds.FundingClaim.Services.Interfaces;
+using Pds.FundingClaim.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,6 @@ namespace Pds.FundingClaim.Services.Implementations
         private IFundingClaimRepository _fundingClaimRepository;
         private ISystemProvider _systemProvider;
         private IEmailService _emailService;
-        private IMapper _mapper;
 
         #endregion
 
@@ -48,7 +48,6 @@ namespace Pds.FundingClaim.Services.Implementations
         /// <param name="emailService">The email service.</param>
         /// <param name="logger">The logging service.</param>
         /// <param name="auditService">The shared audit service.</param>
-        /// <param name="mapper">Automapper.</param>
         public FundingClaimDataService(
             IRepository<Setting> settingsRepository,
             IFundingClaimWindowRepository fundingClaimWindowRepository,
@@ -56,8 +55,7 @@ namespace Pds.FundingClaim.Services.Implementations
             ISystemProvider systemProvider,
             IEmailService emailService,
             ILoggerAdapter<FundingClaimDataService> logger,
-            IAuditService auditService,
-            IMapper mapper)
+            IAuditService auditService)
         {
             _settingsRepository = settingsRepository;
             _fundingClaimWindowRepository = fundingClaimWindowRepository;
@@ -66,7 +64,6 @@ namespace Pds.FundingClaim.Services.Implementations
             _emailService = emailService;
             _logger = logger;
             _auditService = auditService;
-            _mapper = mapper;
         }
 
         #endregion
@@ -128,14 +125,16 @@ namespace Pds.FundingClaim.Services.Implementations
         public async Task<Models.FundingClaim> GetFundingClaimById(int fundingClaimId)
         {
             var fundingClaim = await _fundingClaimRepository.GetFundingClaimById(fundingClaimId);
-            return _mapper.Map<Models.FundingClaim>(fundingClaim);
+
+            return fundingClaim == null ? null : FundingClaimMappings.ToFundingClaim(fundingClaim);
         }
 
         /// <inheritdoc/>
         public async Task<Models.FundingClaim> GetPreviouslySignedVersionOfFundingClaimByCurrentFundingClaimId(int currentFundingClaimId)
         {
             var fundingClaim = await _fundingClaimRepository.GetPreviouslySignedVersionOfFundingClaimByCurrentFundingClaimId(currentFundingClaimId);
-            return _mapper.Map<Models.FundingClaim>(fundingClaim);
+
+            return fundingClaim == null ? null : FundingClaimMappings.ToFundingClaim(fundingClaim);
         }
 
         #endregion

@@ -15,7 +15,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="12.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
     <PackageReference Include="Microsoft.Identity.Web" Version="3.13.2" />
     <PackageReference Include="Pds.Audit.Api.Client" Version="2.0.1" />

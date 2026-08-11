@@ -61,17 +61,12 @@ stages:
           # Run dotnet command to check for vulnerable packages, including transitive dependencies
           dotnet list package --vulnerable --include-transitive 2>&1 | tee build.log
           echo 'Analyse dotnet list package command log output...'
-          # TODO After we replace AutoMapper, change back to including high security vulnerabilities in scan
-          # if grep -q -i 'critical\|high' build.log; then
-          if grep -q -i 'critical' build.log; then
+          if grep -q -i 'critical\|high' build.log; then
               echo 'Must fix security vulnerabilities found on the log output.'
-              # exit 1      # Fails the job if critical or high vulnerabilities are found
-              exit 1      # Fails the job if critical vulnerabilities are found
+              exit 1      # Fails the job if critical or high vulnerabilities are found
           else
-              # echo 'No critical or high severity vulnerabilities found.'
-              echo 'No critical vulnerabilities found.'
-              # exit 0      # Passes the job if no critical/high vulnerabilities are found
-              exit 0      # Passes the job if no critical vulnerabilities are found
+              echo 'No critical or high severity vulnerabilities found.'
+              exit 0      # Passes the job if no critical/high vulnerabilities are found
           fi
 
 #Stage 2 - Test stage: This stage runs the project unit tests

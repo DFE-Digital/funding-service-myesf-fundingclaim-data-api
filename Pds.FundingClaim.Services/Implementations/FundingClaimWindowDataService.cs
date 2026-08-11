@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Pds.FundingClaim.CorporateSchema.FundingClaims;
+﻿using Pds.FundingClaim.CorporateSchema.FundingClaims;
 using Pds.FundingClaim.Repositories.Interfaces;
 using Pds.FundingClaim.Services.Constants;
 using Pds.FundingClaim.Services.Extensions;
@@ -19,7 +18,6 @@ namespace Pds.FundingClaim.Services.Implementations
 
         private IFundingClaimWindowRepository _fundingClaimWindowRepository;
         private ISystemProvider _systemProvider;
-        private IMapper _mapper;
 
         #endregion
 
@@ -32,15 +30,12 @@ namespace Pds.FundingClaim.Services.Implementations
         /// </summary>
         /// <param name="fundingClaimWindowRepository">The funding claim window repository.</param>
         /// <param name="systemProvider">The System provider.</param>
-        /// <param name="mapper">Automapper.</param>
         public FundingClaimWindowDataService(
             IFundingClaimWindowRepository fundingClaimWindowRepository,
-            ISystemProvider systemProvider,
-            IMapper mapper)
+            ISystemProvider systemProvider)
         {
             _fundingClaimWindowRepository = fundingClaimWindowRepository;
             _systemProvider = systemProvider;
-            _mapper = mapper;
         }
 
         #endregion
@@ -57,7 +52,7 @@ namespace Pds.FundingClaim.Services.Implementations
                 window.SubmissionOpenDate <= now
                 && now <= window.SubmissionCloseDate.AddMinutes(ServiceConstants.ContigencyPeriodInMinutes));
 
-            return _mapper.Map<ServicesWindow>(result);
+            return result == null ? null : FundingClaimMappings.ToFundingClaimWindow(result);
         }
 
         /// <inheritdoc/>

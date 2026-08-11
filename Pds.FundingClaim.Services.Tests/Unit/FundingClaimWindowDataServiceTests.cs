@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Pds.FundingClaim.CorporateSchema.FundingClaims;
@@ -49,18 +48,13 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 RequiresSignature = resultFromRepository.RequiresSignature
             };
 
-            var mockMapper = new Mock<IMapper>();
-            mockMapper.Setup(mm => mm.Map<ServicesWindow>(resultFromRepository))
-                .Returns(expected);
-
             var mockSystemProvider = new Mock<ISystemProvider>();
             mockSystemProvider.Setup(method => method.UtcNow())
                               .Returns(now);
 
             var fundingClaimWindowDataService = new FundingClaimWindowDataService(
                 mockFundingClaimWindowRepository.Object,
-                mockSystemProvider.Object,
-                mockMapper.Object);
+                mockSystemProvider.Object);
 
             //act
             var response = await fundingClaimWindowDataService.GetFundingClaimCurrentWindow();
@@ -81,16 +75,13 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                                                 bool>>>()))
                                             .ReturnsAsync(result);
 
-            var mockMapper = new Mock<IMapper>();
-
             var mockSystemProvider = new Mock<ISystemProvider>();
             mockSystemProvider.Setup(method => method.UtcNow())
                               .Returns(now);
 
             var fundingClaimWindowDataService = new FundingClaimWindowDataService(
                 mockFundingClaimWindowRepository.Object,
-                mockSystemProvider.Object,
-                mockMapper.Object);
+                mockSystemProvider.Object);
 
             //act
             var response = await fundingClaimWindowDataService.GetFundingClaimCurrentWindow();
@@ -148,8 +139,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
 
             var fundingClaimWindowDataService = new FundingClaimWindowDataService(
                 mockFundingClaimWindowRepository.Object,
-                mockSystemProvider.Object,
-                null);
+                mockSystemProvider.Object);
 
             //act
             await fundingClaimWindowDataService.UpdateFundingClaimWindow(fundingClaimDetails);
