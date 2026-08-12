@@ -28,6 +28,7 @@
     </PackageReference>
     <PackageReference Include="Pds.Audit.Api.Client" Version="2.0.1" />
     <PackageReference Include="Pds.Core.CodeAnalysis.StyleCop" Version="2.0.0" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>

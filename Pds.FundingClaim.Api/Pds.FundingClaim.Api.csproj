@@ -31,6 +31,7 @@
     <PackageReference Include="Pds.Core.Logging" Version="3.0.0" />
     <PackageReference Include="Pds.Core.Telemetry.ApplicationInsights" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>

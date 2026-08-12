@@ -31,6 +31,7 @@ namespace Pds.FundingClaim.Services.Extensions
                 CreatedAt = fundingclaim.CreatedAt,
                 LastUpdatedAt = fundingclaim.LastUpdatedAt,
                 FundingClaimUniqueId = fundingclaim.FundingClaimUniqueId,
+                FundingClaimWindowId = fundingclaim.FundingClaimWindowId ?? 0,
                 FundingClaimWindow = fundingclaim.FundingClaimWindow.ToFundingClaimWindow(),
                 DateSubmitted = fundingclaim.DateSubmitted,
                 Status = fundingclaim.Status
