@@ -43,34 +43,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
         }
 
         [TestMethod, TestCategory("Unit")]
-        public async Task SendFundingClaimReadyToSignEmail_WhenCalled_SendsReadyToSignEmailMessages()
-        {
-            //arrange
-            var fundingClaimIds = new List<int> { 1, 2 };
-            var azureServiceBusMessagingService = new Mock<IAzureMessagingServiceBusService>();
-
-            var mockLogger = new Mock<ILoggerAdapter<EmailService>>();
-            var emailService = new EmailService(azureServiceBusMessagingService.Object, mockLogger.Object);
-
-            //act
-            await emailService.SendFundingClaimReadyToSignEmail(fundingClaimIds);
-
-            //assert
-            azureServiceBusMessagingService.Verify(
-               repo => repo.SendMessageAsync(It.Is<FundingClaimReadyToSignMessage>(fc => fc.FundingClaimId == fundingClaimIds[0]), ServiceConstants.FundingClaimReadyToSignEmailQueue, It.IsAny<string>()), Times.Once);
-            azureServiceBusMessagingService.Verify(
-               repo => repo.SendMessageAsync(It.Is<FundingClaimReadyToSignMessage>(fc => fc.FundingClaimId == fundingClaimIds[1]), ServiceConstants.FundingClaimReadyToSignEmailQueue, It.IsAny<string>()), Times.Once);
-            mockLogger.Verify(
-                l => l.LogInformation(
-                "Creating azure service bus message for sending email for ready to sign funding claim {fundingClaimId}",
-                fundingClaimIds[0]), Times.Once);
-            mockLogger.Verify(
-                l => l.LogInformation(
-                "Creating azure service bus message for sending email for ready to sign funding claim {fundingClaimId}",
-                fundingClaimIds[1]), Times.Once);
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public async Task SendFundingClaimReadyToViewEmail_WhenCalled_SendsReadyToSignViewMessages()
         {
             //arrange

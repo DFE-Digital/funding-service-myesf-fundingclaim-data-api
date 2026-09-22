@@ -17,13 +17,6 @@ namespace Pds.FundingClaim.Services.Interfaces
         Task SendFundingClaimWithdrawnEmail(List<int> fundingClaimIds);
 
         /// <summary>
-        /// Sends a message that a final funding claim is ready to sign.
-        /// </summary>
-        /// <param name="fundingClaimIds">The Ids of funding claims that are ready to sign.</param>
-        /// <returns>The asynchronous task.</returns>
-        Task SendFundingClaimReadyToSignEmail(List<int> fundingClaimIds);
-
-        /// <summary>
         /// Sends a message that a funding claim is ready to view.
         /// </summary>
         /// <param name="fundingClaimIds">The Ids of funding claims that are ready to view.</param>

@@ -635,13 +635,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                             list.Count == 2)),
                     Times.Once);
 
-            mockEmailService.Verify(
-                    emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
-                        list =>
-                            list[0] == 1 &&
-                            list.Count == 2)),
-                    Times.Never);
-
             VerifyWindowDetails(mockLogger, lastFundingClaimWindow);
         }
 

@@ -44,24 +44,6 @@ namespace Pds.FundingClaim.Services.Implementations
         }
 
         /// <inheritdoc/>
-        public async Task SendFundingClaimReadyToSignEmail(List<int> fundingClaimIds)
-        {
-            foreach (var fundingClaimId in fundingClaimIds)
-            {
-                _logger.LogInformation(
-                    "Creating azure service bus message for sending email for ready to sign funding claim {fundingClaimId}",
-                    fundingClaimId);
-
-                var message = new FundingClaimReadyToSignMessage
-                {
-                    FundingClaimId = fundingClaimId
-                };
-
-                await _azureMessagingServiceBusService.SendMessageAsync(message, ServiceConstants.FundingClaimReadyToSignEmailQueue);
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task SendFundingClaimReadyToViewEmail(List<int> fundingClaimIds)
         {
             foreach (var fundingClaimId in fundingClaimIds)
