@@ -343,10 +343,10 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 list.Count == 1)), Times.Never);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
-                list =>
-                list[0] == 4 &&
-                list.Count == 1)), Times.Once);
+               emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
+               list =>
+               list[0] == 4 &&
+               list.Count == 1)), Times.Once);
 
             VerifyWindowDetails(mockLogger, lastFundingClaimWindow);
 
@@ -490,14 +490,14 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 Times.Never);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                     list =>
                     list[0] == 1 &&
                     list.Count == 2)),
                 Times.Once);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                     list =>
                     list[1] == 2 &&
                     list.Count == 2)),
@@ -628,23 +628,19 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                     It.Is<Setting>(fw => fw.Value == now.ToString())),
                 Times.Once);
 
-            if (dataCollectionKey.Contains("Final"))
-            {
-                mockEmailService.Verify(
-                    emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
-                        list =>
-                            list.Count == 2)),
-                    Times.Once);
-            }
-            else
-            {
-                mockEmailService.Verify(
+            mockEmailService.Verify(
                     emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                         list =>
                             list[0] == 1 &&
                             list.Count == 2)),
+                    Times.Once);
+
+            mockEmailService.Verify(
+                    emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                        list =>
+                            list[0] == 1 &&
+                            list.Count == 2)),
                     Times.Never);
-            }
 
             VerifyWindowDetails(mockLogger, lastFundingClaimWindow);
         }
@@ -775,7 +771,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
               repo => repo.AuditAsync(It.IsAny<AuditModels.Audit>()), Times.Exactly(2));
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                 list =>
                 list[0] == 2 &&
                 list.Count == 1)), Times.Once);

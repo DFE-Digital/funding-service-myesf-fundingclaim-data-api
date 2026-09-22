@@ -74,7 +74,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
         }
 
         [TestMethod, TestCategory("Integration")]
-        public async Task CreateFundingClaim_WhenClaimTypeIsFinalAndNotInRepository_CreatesReadyToSignFundingClaimAndLog()
+        public async Task CreateFundingClaim_WhenClaimTypeIsFinalAndPeriodEarlierThan2526AndNotInRepository_CreatesReadyToSignFundingClaimAndLog()
         {
             //arrange
             var window = new FundingClaimWindow();
@@ -111,6 +111,51 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
             _context.FundingClaims.Should().HaveCount(1);
             _context.FundingClaims.Should().Equal(fundingClaim);
             _context.FundingClaims.First().Status.Should().Be(FundingClaimState.ReadyToSign);
+
+            mockLogger.Verify(l => l.LogInformation(
+                "User just created a {entityType} with id {createdEntityId}.",
+                fundingClaim.GetType(),
+                fundingClaim.GetType().GetProperty("Id").GetValue(fundingClaim)));
+        }
+
+        [TestMethod, TestCategory("Integration")]
+        public async Task CreateFundingClaim_WhenClaimTypeIsFinalAndPeriod2526OrLaterAndNotInRepository_CreatesReadyToSignFundingClaimAndLog()
+        {
+            //arrange
+            var window = new FundingClaimWindow();
+            window.DataCollectionKey = "2526-Final";
+
+            var schemaFundingClaim = new SchemaFundingClaim()
+            {
+                FundingClaimId = "2526-Final_12345678_1",
+                Ukprn = "12345678",
+                VersionNumber = 1,
+                ClaimTypeName = "FINAL",
+                Period = "2526",
+                SubmissionDateTime = DateTime.Parse("2026-09-01T00:00:00")
+            };
+
+            var expectedClaim = new DataModels.FundingClaim()
+            {
+                Id = 1,
+                FundingClaimUniqueId = schemaFundingClaim.FundingClaimId,
+                Type = schemaFundingClaim.ClaimTypeName.ToFundingClaimType()
+            };
+
+            var mockLogger = new Mock<ILoggerAdapter<Repository<DataModels.FundingClaim>>>(MockBehavior.Strict);
+            mockLogger.Setup(
+                mL => mL.LogInformation(
+                    "User just created a {entityType} with id {createdEntityId}.", expectedClaim.GetType(), expectedClaim.Id)).Verifiable();
+
+            var repository = new FundingClaimRepository(_context, mockLogger.Object);
+
+            //act
+            var fundingClaim = await repository.CreateFundingClaim(window, schemaFundingClaim);
+
+            //assert
+            _context.FundingClaims.Should().HaveCount(1);
+            _context.FundingClaims.Should().Equal(fundingClaim);
+            _context.FundingClaims.First().Status.Should().Be(FundingClaimState.ReadyToReview);
 
             mockLogger.Verify(l => l.LogInformation(
                 "User just created a {entityType} with id {createdEntityId}.",
