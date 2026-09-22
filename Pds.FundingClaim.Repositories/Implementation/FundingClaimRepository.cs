@@ -58,7 +58,7 @@ namespace Pds.FundingClaim.Repositories.Implementation
             var version = corporateFundingClaim.VersionNumber;
             var period = corporateFundingClaim.Period;
             var submissionDate = corporateFundingClaim.SubmissionDateTime;
-            var fundingClaimState = type == FundingClaimType.FINAL ?
+            var fundingClaimState = type == FundingClaimType.FINAL && int.TryParse(period, out int val) && val < 2526 ?
                 FundingClaimState.ReadyToSign : FundingClaimState.ReadyToReview;
 
             var fundingClaimData = new FundingClaimData(corporateFundingClaim);
