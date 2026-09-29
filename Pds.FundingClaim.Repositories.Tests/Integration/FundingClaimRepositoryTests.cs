@@ -110,7 +110,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
             //assert
             _context.FundingClaims.Should().HaveCount(1);
             _context.FundingClaims.Should().Equal(fundingClaim);
-            _context.FundingClaims.First().Status.Should().Be(FundingClaimState.ReadyToSign);
+            _context.FundingClaims.First().Status.Should().Be(FundingClaimState.ReadyToReview);
 
             mockLogger.Verify(l => l.LogInformation(
                 "User just created a {entityType} with id {createdEntityId}.",
@@ -231,72 +231,6 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
         }
         #endregion
 
-
-        [TestMethod, TestCategory("Integration")]
-        public void GetFundingClaimsToBeAutoWithdrawnForWindow_WhenCalled_GetsFundingClaimsEligibleToBeAutowithdrawn()
-        {
-            //arrange
-            var fundingClaimWindowToBeConsidered = new FundingClaimWindow { Id = 1, DataCollectionKey = "2425-Final" };
-            var fundingClaimWindowNotToBeConsidered = new FundingClaimWindow { Id = 2, DataCollectionKey = "2425-Final" };
-
-            var fundingClaimInWindowButSigned = new DataModels.FundingClaim
-            {
-                FundingClaimWindow = fundingClaimWindowToBeConsidered,
-                Status = FundingClaimState.Replaced,
-                FundingClaimUniqueId = "1",
-                Period = "2425",
-                Title = "fundingClaimInWindowButSigned"
-            };
-
-            var fundingClaimNotInWindow = new DataModels.FundingClaim
-            {
-                FundingClaimWindow = fundingClaimWindowNotToBeConsidered,
-                Status = FundingClaimState.ReadyToSign,
-                FundingClaimUniqueId = "2",
-                Period = "2425",
-                Title = "fundingClaimNotInWindow"
-            };
-
-            var fundingClaimToBeWithdrawnOne = new DataModels.FundingClaim
-            {
-                FundingClaimWindow = fundingClaimWindowToBeConsidered,
-                Status = FundingClaimState.ReadyToSign,
-                FundingClaimUniqueId = "3",
-                Period = "2425",
-                Title = "fundingClaimToBeWithdrawnOne"
-            };
-
-            var fundingClaimToBeWithdrawnTwo = new DataModels.FundingClaim
-            {
-                FundingClaimWindow = fundingClaimWindowToBeConsidered,
-                Status = FundingClaimState.ReadyToSign,
-                FundingClaimUniqueId = "4",
-                Period = "2425",
-                Title = "fundingClaimToBeWithdrawnTwo"
-            };
-
-            _context.FundingClaims.AddRange(new List<DataModels.FundingClaim>
-            {
-                fundingClaimInWindowButSigned,
-                fundingClaimNotInWindow,
-                fundingClaimToBeWithdrawnOne,
-                fundingClaimToBeWithdrawnTwo
-            });
-            _context.SaveChanges();
-
-            var repository = new FundingClaimRepository(_context, null);
-
-            //act
-            var response = repository.GetFundingClaimsToBeAutoWithdrawnForWindow(fundingClaimWindowToBeConsidered.Id).ToList();
-
-            //assert
-            response.Should().HaveCount(2);
-            response.Should().BeEquivalentTo(new List<DataModels.FundingClaim>
-            {
-                fundingClaimToBeWithdrawnOne,
-                fundingClaimToBeWithdrawnTwo
-            });
-        }
 
         [TestMethod, TestCategory("Integration")]
         public void GetFundingClaimsForLastWindow_WhenCalled_GetsFundingClaimsForLastWindow()
@@ -484,7 +418,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
                 Period = "2425",
                 Type = FundingClaimType.FINAL,
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 3,
                 Title = "Title 3"
             };
@@ -524,7 +458,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
                 Period = "2425",
                 Type = FundingClaimType.FINAL,
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 1,
                 Title = "Title 1"
             };
@@ -562,7 +496,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
                 Period = "2425",
                 Type = FundingClaimType.FINAL,
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 1,
                 Title = "Title 1"
             };
@@ -581,7 +515,7 @@ namespace Pds.FundingClaim.Repositories.Tests.Integration
                 Period = "2425",
                 Type = FundingClaimType.FINAL,
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 2,
                 Title = "Title 2"
             };

@@ -160,25 +160,6 @@ namespace Pds.FundingClaim.Api.Tests.Unit
         }
 
         [TestMethod, TestCategory("Unit")]
-        public async Task AutoWithdrawFundingClaims_WhenCalled_CreatesLogAndReturnsSuccessMessage()
-        {
-            //arrange
-            var mockFundingClaimDataService = new Mock<IFundingClaimDataService>();
-            mockFundingClaimDataService.Setup(service => service.AutoWithdrawFundingClaims())
-                             .Returns(Task.CompletedTask);
-
-            var mockLogger = new Mock<ILoggerAdapter<FundingClaimController>>();
-            var fundingClaimController = new FundingClaimController(null, null, mockFundingClaimDataService.Object, mockLogger.Object);
-
-            //act
-            var response = await fundingClaimController.AutoWithdrawFundingClaims();
-
-            //assert
-            response.Should().BeOfType(typeof(OkResult));
-            mockLogger.Verify(l => l.LogInformation("AutoWithdrawFundingClaims ran successfully."));
-        }
-
-        [TestMethod, TestCategory("Unit")]
         public async Task CreateFundingClaims_CreatesLogAndReturnsSuccessMessage()
         {
             //arrange
