@@ -26,24 +26,6 @@ namespace Pds.FundingClaim.Services.Implementations
         }
 
         /// <inheritdoc/>
-        public async Task SendFundingClaimWithdrawnEmail(List<int> fundingClaimIds)
-        {
-            foreach (var fundingClaimId in fundingClaimIds)
-            {
-                _logger.LogInformation(
-                    "Creating azure service bus message for sending email for withdrawn funding claim {fundingClaimId}",
-                    fundingClaimId);
-
-                var message = new FundingClaimWithdrawnMessage
-                {
-                    FundingClaimId = fundingClaimId
-                };
-
-                await _azureMessagingServiceBusService.SendMessageAsync(message, ServiceConstants.FundingClaimWithdrawnEmailQueue);
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task SendFundingClaimReadyToViewEmail(List<int> fundingClaimIds)
         {
             foreach (var fundingClaimId in fundingClaimIds)

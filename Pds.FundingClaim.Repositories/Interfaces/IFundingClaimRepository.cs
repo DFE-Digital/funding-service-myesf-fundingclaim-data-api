@@ -19,13 +19,6 @@ namespace Pds.FundingClaim.Repositories.Interfaces
             FundingClaimWindow lastClaimWindow, CorporateSchema.FundingClaims.FundingClaim corporateFundingClaim);
 
         /// <summary>
-        /// Gets the funding claims that are eligible to be autowithdrawn in the window.
-        /// </summary>
-        /// <param name="fundingClaimWindowId">The funding claim window identifier.</param>
-        /// <returns>The list of funding claims.</returns>
-        IEnumerable<DataModels.FundingClaim> GetFundingClaimsToBeAutoWithdrawnForWindow(int fundingClaimWindowId);
-
-        /// <summary>
         /// Gets the funding claims for the last window.
         /// </summary>
         /// <param name="fundingClaimWindowId">The funding claim window identifier.</param>

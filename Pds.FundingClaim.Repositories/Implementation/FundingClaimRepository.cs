@@ -58,8 +58,7 @@ namespace Pds.FundingClaim.Repositories.Implementation
             var version = corporateFundingClaim.VersionNumber;
             var period = corporateFundingClaim.Period;
             var submissionDate = corporateFundingClaim.SubmissionDateTime;
-            var fundingClaimState = type == FundingClaimType.FINAL && int.TryParse(period, out int val) && val < 2526 ?
-                FundingClaimState.ReadyToSign : FundingClaimState.ReadyToReview;
+            var fundingClaimState = FundingClaimState.ReadyToReview;
 
             var fundingClaimData = new FundingClaimData(corporateFundingClaim);
             var fundingClaim = new DataModels.FundingClaim(
@@ -78,15 +77,6 @@ namespace Pds.FundingClaim.Repositories.Implementation
             await Create(fundingClaim);
 
             return fundingClaim;
-        }
-
-        /// <inheritdoc/>
-        public IEnumerable<DataModels.FundingClaim> GetFundingClaimsToBeAutoWithdrawnForWindow(int fundingClaimWindowId)
-        {
-            return Where(fundingClaim =>
-                                fundingClaim.FundingClaimWindow.Id == fundingClaimWindowId
-                                && fundingClaim.Status == FundingClaimState.ReadyToSign)
-                        .OrderBy(fundingClaim => fundingClaim.Version);
         }
 
         /// <inheritdoc/>

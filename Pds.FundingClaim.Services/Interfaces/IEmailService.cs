@@ -10,13 +10,6 @@ namespace Pds.FundingClaim.Services.Interfaces
     public interface IEmailService
     {
         /// <summary>
-        /// Sends a message that a funding claim has been withdrawn.
-        /// </summary>
-        /// <param name="fundingClaimIds">The Ids of funding claim that has been withdrawn.</param>
-        /// <returns>The asynchronous task.</returns>
-        Task SendFundingClaimWithdrawnEmail(List<int> fundingClaimIds);
-
-        /// <summary>
         /// Sends a message that a funding claim is ready to view.
         /// </summary>
         /// <param name="fundingClaimIds">The Ids of funding claims that are ready to view.</param>
