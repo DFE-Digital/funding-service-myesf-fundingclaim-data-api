@@ -41,16 +41,6 @@
         public const int UseNewReconciliationsFeedReader = 40;
 
         /// <summary>
-        /// Funding Claim Withdrawn Email Queue.
-        /// </summary>
-        public const string FundingClaimWithdrawnEmailQueue = "fundingclaimwithdrawnemail";
-
-        /// <summary>
-        /// Funding Claim Ready To Sign Email Queue.
-        /// </summary>
-        public const string FundingClaimReadyToSignEmailQueue = "fundingclaimreadytosignemail";
-
-        /// <summary>
         /// Funding Claim Ready To View Email Queue.
         /// </summary>
         public const string FundingClaimReadyToViewEmailQueue = "fundingclaimreadytoviewemail";

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pds.FundingClaim.Repositories.Enums
 {
@@ -10,6 +11,7 @@ namespace Pds.FundingClaim.Repositories.Enums
         /// <summary>
         /// The funding claim is ready to be signed by the provider.
         /// </summary>
+        [Obsolete("From 25-26 onwards, Final Funding Claims will not require signing.")]
         [Display(Name = "Ready to sign")]
         ReadyToSign = 0,
 
@@ -28,6 +30,7 @@ namespace Pds.FundingClaim.Repositories.Enums
         /// <summary>
         /// The funding claim wasn't signed in the submission/signing window and has now been withdrawn.
         /// </summary>
+        [Obsolete("From 25-26 onwards, funding claims will not be withdrawn.")]
         [Display(Name = "Withdrawn")]
         AutoWithdrawn = 3,
 

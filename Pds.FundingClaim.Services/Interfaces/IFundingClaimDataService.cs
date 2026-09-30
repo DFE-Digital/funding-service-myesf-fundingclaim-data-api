@@ -12,12 +12,6 @@ namespace Pds.FundingClaim.Services.Interfaces
         #region Public Methods
 
         /// <summary>
-        /// Autowithdraws the funding claims in the last window that has passed signature close date.
-        /// </summary>
-        /// <returns>The completed Task.</returns>
-        Task AutoWithdrawFundingClaims();
-
-        /// <summary>
         /// Processes Funding Claims if a window exists with the given Id.
         /// </summary>
         /// <param name="fundingClaims">List of funding claims to be added.</param>

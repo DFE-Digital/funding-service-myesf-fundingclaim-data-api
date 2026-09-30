@@ -28,88 +28,6 @@ namespace Pds.FundingClaim.Services.Tests.Unit
         private const string DataCollectionKey1920Final = "1920-Final";
         private Mock<IAuditService> mockAuditService;
 
-        #region AutoWithdrawFundingClaims
-
-        [TestMethod, TestCategory("Unit")]
-        public async Task AutoWithdrawFundingClaims_WhenCalled_AutoWithdrawsEligibleFundingClaims()
-        {
-            //arrange
-            var now = new DateTime(2000, 12, 12, 10, 10, 10);
-
-            var mockFundingClaimWindowRepository = new Mock<IFundingClaimWindowRepository>();
-            var lastFundingClaimWindow = new FundingClaimWindow { Id = 2, SignatureCloseDate = now.AddDays(-5) };
-            mockFundingClaimWindowRepository.Setup(repo => repo.GetLastWindow(now))
-                                            .Returns(lastFundingClaimWindow);
-
-            var mockFundingClaimRepository = new Mock<IFundingClaimRepository>();
-
-            MockAuditService();
-
-            var fundingClaimOne = new DomainFundingClaim
-            {
-                Id = 1,
-                FundingClaimWindow = lastFundingClaimWindow,
-                Status = FundingClaimState.ReadyToSign
-            };
-
-            var fundingClaimTwo = new DomainFundingClaim
-            {
-                Id = 2,
-                FundingClaimWindow = lastFundingClaimWindow,
-                Status = FundingClaimState.ReadyToSign
-            };
-
-            mockFundingClaimRepository.Setup(repo => repo.GetFundingClaimsToBeAutoWithdrawnForWindow(lastFundingClaimWindow.Id))
-                                      .Returns(new List<DomainFundingClaim> { fundingClaimOne, fundingClaimTwo });
-
-            var mockSystemProvider = new Mock<ISystemProvider>();
-            mockSystemProvider.Setup(method => method.UtcNow())
-                .Returns(now);
-
-            var mockEmailService = new Mock<IEmailService>();
-
-            var mockLogger = new Mock<ILoggerAdapter<FundingClaimDataService>>();
-
-            var fundingClaimDataService = new FundingClaimDataService(
-                null,
-                mockFundingClaimWindowRepository.Object,
-                mockFundingClaimRepository.Object,
-                mockSystemProvider.Object,
-                mockEmailService.Object,
-                mockLogger.Object,
-                mockAuditService.Object);
-
-            //act
-            await fundingClaimDataService.AutoWithdrawFundingClaims();
-
-            //assert
-            mockFundingClaimRepository.Verify(
-                repo => repo.Update(It.Is<DomainFundingClaim>(
-                fc =>
-                fc.Id == 1 &&
-                fc.Status == FundingClaimState.AutoWithdrawn &&
-                fc.LastUpdatedAt == now)), Times.Once);
-
-            mockFundingClaimRepository.Verify(
-                repo => repo.Update(It.Is<DomainFundingClaim>(
-                fc =>
-                fc.Id == 2 &&
-                fc.Status == FundingClaimState.AutoWithdrawn &&
-                fc.LastUpdatedAt == now)), Times.Once);
-
-            mockAuditService.Verify(
-                repo => repo.AuditAsync(It.IsAny<AuditModels.Audit>()), Times.Exactly(2));
-
-            mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimWithdrawnEmail(It.Is<List<int>>(
-                list =>
-                list[0] == 1 &&
-                list[1] == 2 &&
-                list.Count == 2)), Times.Once);
-        }
-
-        #endregion
-
 
         #region CreateFundingClaims
 
@@ -343,10 +261,10 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 list.Count == 1)), Times.Never);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
-                list =>
-                list[0] == 4 &&
-                list.Count == 1)), Times.Once);
+               emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
+               list =>
+               list[0] == 4 &&
+               list.Count == 1)), Times.Once);
 
             VerifyWindowDetails(mockLogger, lastFundingClaimWindow);
 
@@ -490,14 +408,14 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 Times.Never);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                     list =>
                     list[0] == 1 &&
                     list.Count == 2)),
                 Times.Once);
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                     list =>
                     list[1] == 2 &&
                     list.Count == 2)),
@@ -628,23 +546,12 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                     It.Is<Setting>(fw => fw.Value == now.ToString())),
                 Times.Once);
 
-            if (dataCollectionKey.Contains("Final"))
-            {
-                mockEmailService.Verify(
-                    emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
-                        list =>
-                            list.Count == 2)),
-                    Times.Once);
-            }
-            else
-            {
-                mockEmailService.Verify(
+            mockEmailService.Verify(
                     emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                         list =>
                             list[0] == 1 &&
                             list.Count == 2)),
-                    Times.Never);
-            }
+                    Times.Once);
 
             VerifyWindowDetails(mockLogger, lastFundingClaimWindow);
         }
@@ -675,7 +582,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 FundingClaimUniqueId = "1617_Final_12345678_1",
                 FundingClaimWindow = lastFundingClaimWindow,
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 1
             };
 
@@ -711,7 +618,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                 FundingClaimUniqueId = schemaFundingClaim.FundingClaimId,
                 FundingClaimWindow = lastFundingClaimWindow,
                 Ukprn = int.Parse(schemaFundingClaim.Ukprn),
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Type = schemaFundingClaim.ClaimTypeName.ToFundingClaimType(),
                 Version = schemaFundingClaim.VersionNumber
             };
@@ -775,7 +682,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
               repo => repo.AuditAsync(It.IsAny<AuditModels.Audit>()), Times.Exactly(2));
 
             mockEmailService.Verify(
-                emailService => emailService.SendFundingClaimReadyToSignEmail(It.Is<List<int>>(
+                emailService => emailService.SendFundingClaimReadyToViewEmail(It.Is<List<int>>(
                 list =>
                 list[0] == 2 &&
                 list.Count == 1)), Times.Once);
@@ -809,7 +716,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                     SignatureCloseDate = DateTime.Now
                 },
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 1
             };
 
@@ -918,7 +825,7 @@ namespace Pds.FundingClaim.Services.Tests.Unit
                     SignatureCloseDate = DateTime.Now
                 },
                 Ukprn = 12345678,
-                Status = FundingClaimState.ReadyToSign,
+                Status = FundingClaimState.ReadyToReview,
                 Version = 1
             };
 

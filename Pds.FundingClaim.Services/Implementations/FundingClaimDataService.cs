@@ -72,36 +72,6 @@ namespace Pds.FundingClaim.Services.Implementations
         #region Implementation
 
         /// <inheritdoc/>
-        public async Task AutoWithdrawFundingClaims()
-        {
-            var now = _systemProvider.UtcNow();
-            var lastWindow = _fundingClaimWindowRepository
-                .GetLastWindow(now);
-
-            if (lastWindow != null)
-            {
-                var fundingClaimsEligibleToBeAutoWithdrawn = _fundingClaimRepository
-                    .GetFundingClaimsToBeAutoWithdrawnForWindow(lastWindow.Id);
-                var fundingClaimIds = new List<int>();
-
-                foreach (var fundingClaimEligibleToBeAutoWithdrawn in fundingClaimsEligibleToBeAutoWithdrawn)
-                {
-                    var previousStatus = fundingClaimEligibleToBeAutoWithdrawn.Status;
-                    fundingClaimEligibleToBeAutoWithdrawn.Status = FundingClaimState.AutoWithdrawn;
-                    fundingClaimEligibleToBeAutoWithdrawn.LastUpdatedAt = now;
-
-                    await _fundingClaimRepository.Update(fundingClaimEligibleToBeAutoWithdrawn);
-
-                    await CreateFundingClaimLogAndAudit(fundingClaimEligibleToBeAutoWithdrawn, previousStatus, Audit.Api.Client.Enumerations.ActionType.FundingClaimWithdrawn);
-
-                    fundingClaimIds.Add(fundingClaimEligibleToBeAutoWithdrawn.Id);
-                }
-
-                await _emailService.SendFundingClaimWithdrawnEmail(fundingClaimIds);
-            }
-        }
-
-        /// <inheritdoc/>
         public async Task CreateFundingClaims(
             List<SchemaFundingClaim> fundingClaims, int fundingClaimWindowId)
         {
@@ -118,7 +88,7 @@ namespace Pds.FundingClaim.Services.Implementations
 
             await UpdateLastRetrievedSetting(fundingClaimWindow);
 
-            await SendReadyToSignAndReadyToViewEmails(newFundingClaimIds, IsFinalFundingClaim(fundingClaimWindow.DataCollectionKey));
+            await SendReadyToViewEmails(newFundingClaimIds);
         }
 
         /// <inheritdoc/>
@@ -203,7 +173,6 @@ namespace Pds.FundingClaim.Services.Implementations
             var versionsOfSameClaim = _fundingClaimRepository
                 .Where(fc => fc.FundingClaimWindow.Id == fundingClaimToMatch.FundingClaimWindow.Id
                              && fc.Ukprn == fundingClaimToMatch.Ukprn
-                             && fc.Status == FundingClaimState.ReadyToSign
                              && fc.Version < fundingClaimToMatch.Version)
                 .OrderBy(fc => fc.Version)
                 .ToList();
@@ -227,14 +196,9 @@ namespace Pds.FundingClaim.Services.Implementations
             await CreateFundingClaimLogAndAudit(fundingClaim, previousStatus, Audit.Api.Client.Enumerations.ActionType.FundingClaimReplaced);
         }
 
-        private async Task SendReadyToSignAndReadyToViewEmails(List<int> newFundingClaimIds, bool isFinalFundingClaim)
+        private async Task SendReadyToViewEmails(List<int> newFundingClaimIds)
         {
-            if (isFinalFundingClaim && newFundingClaimIds.Any())
-            {
-                await _emailService.SendFundingClaimReadyToSignEmail(newFundingClaimIds);
-            }
-
-            if (!isFinalFundingClaim && newFundingClaimIds.Any())
+            if (newFundingClaimIds.Any())
             {
                 await _emailService.SendFundingClaimReadyToViewEmail(newFundingClaimIds);
             }
@@ -248,7 +212,6 @@ namespace Pds.FundingClaim.Services.Implementations
             {
                 Audit.Api.Client.Enumerations.ActionType.FundingClaimCreated => "been created. ",
                 Audit.Api.Client.Enumerations.ActionType.FundingClaimReplaced => "been replaced. ",
-                Audit.Api.Client.Enumerations.ActionType.FundingClaimWithdrawn => "been withdrawn. ",
                 _ => throw new ArgumentOutOfRangeException(nameof(action), action, null),
             };
 

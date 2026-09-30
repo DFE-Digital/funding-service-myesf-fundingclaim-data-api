@@ -171,22 +171,6 @@ namespace Pds.FundingClaim.Api.Controllers
         }
 
         /// <summary>
-        /// Api method to autowithdraw funding claims in last window.
-        /// </summary>
-        /// <returns><see cref="Task{IActionResult}"/>.</returns>
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> AutoWithdrawFundingClaims()
-        {
-            await _fundingClaimDataService.AutoWithdrawFundingClaims();
-            _logger.LogInformation("AutoWithdrawFundingClaims ran successfully.");
-
-            return Ok();
-        }
-
-        /// <summary>
         /// Api method to CreateFundingClaims and send relevant emails.
         /// </summary>
         /// <param name="createFundingClaimsRequest">Request to DCT to CreateFundingClaims.</param>
