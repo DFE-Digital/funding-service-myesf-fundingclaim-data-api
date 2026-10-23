@@ -10,7 +10,7 @@ The Manage Your Education and Skills Funding (MYESF) Funding Claim API is used b
 
 ## About this project
 
-This project is an ASP.NET Core 8 web application utilising Azure App Service for deployment.
+This project is an ASP.NET Core 10 web application utilising Azure App Service for deployment.
 
 The web application runs on an Azure App service on Azure.
 

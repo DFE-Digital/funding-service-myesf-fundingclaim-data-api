@@ -1,4 +1,3 @@
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -6,13 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Pds.Audit.Api.Client.Registrations;
 using Pds.Core.ApiAuthentication;
 using Pds.Core.Logging;
 using Pds.Core.Telemetry.ApplicationInsights;
 using Pds.FundingClaim.Api.DependencyInjection;
-using Pds.FundingClaim.Api.Telemetry;
 using Pds.FundingClaim.Repositories.Data;
 
 namespace Pds.FundingClaim.Api
@@ -72,10 +72,15 @@ namespace Pds.FundingClaim.Api
 
             services.AddLoggerAdapter();
             services.AddPdsApplicationInsightsTelemetry(options => BuildAppInsightsConfiguration(options));
-            services.AddSingleton<ITelemetryInitializer>(
-                new CustomTelemetryInitializer(
-                    Configuration["Environment"],
-                    AssemblyName));
+            services.AddOpenTelemetry()
+                .ConfigureResource(resuorce => resuorce
+                .AddService(AssemblyName)
+                .AddAttributes(
+                [
+                    new ("environment", Configuration["Environment"]),
+                    new ("component", AssemblyName)
+                ]))
+                .WithTracing(tracing => tracing.AddAspNetCoreInstrumentation());
 
             services.AddAzureADAuthentication(Configuration);
 
