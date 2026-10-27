@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.2.1" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.2.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.23.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
     <PackageReference Include="Pds.Core.ApiAuthentication" Version="3.0.0" />
     <PackageReference Include="Pds.Core.CodeAnalysis.StyleCop" Version="2.0.0" />
