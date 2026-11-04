@@ -87,37 +87,41 @@ namespace Pds.FundingClaim.Repositories.Tests.Unit
 
         //This test will not pass except with ExpectedException.
         [TestMethod, TestCategory("Unit")]
-        [ExpectedException(typeof(PeriodWrongLengthException), "The period 16178's length is not 4 characters.")]
         public void SetTitle_WhenFundingClaimPeriodWrongCharacterLength_ThrowsPeriodWrongLengthException()
         {
-            //arrange
-            var window = new FundingClaimWindow();
-
-            var schemaFundingClaim = new SchemaFundingClaim()
+            var exception = Assert.ThrowsExactly<PeriodWrongLengthException>(() =>
             {
-                FundingClaimId = "1617-MidYear_12345678_1",
-                Ukprn = "12345678",
-                VersionNumber = 1,
-                ClaimTypeName = "MIDYEAR",
-                Period = "16178",
-                SubmissionDateTime = DateTime.Parse("2016-09-01T00:00:00")
-            };
+                //arrange
+                var window = new FundingClaimWindow();
 
-            var fundingClaimData = new FundingClaimData(schemaFundingClaim);
+                var schemaFundingClaim = new SchemaFundingClaim()
+                {
+                    FundingClaimId = "1617-MidYear_12345678_1",
+                    Ukprn = "12345678",
+                    VersionNumber = 1,
+                    ClaimTypeName = "MIDYEAR",
+                    Period = "16178",
+                    SubmissionDateTime = DateTime.Parse("2016-09-01T00:00:00")
+                };
 
-            var fundingClaim = new DataModels.FundingClaim(
-                window,
-                fundingClaimData,
-                schemaFundingClaim.FundingClaimId,
-                int.Parse(schemaFundingClaim.Ukprn),
-                schemaFundingClaim.VersionNumber,
-                schemaFundingClaim.ClaimTypeName.ToFundingClaimType(),
-                schemaFundingClaim.Period,
-                schemaFundingClaim.SubmissionDateTime,
-                FundingClaimState.ReadyToReview);
+                var fundingClaimData = new FundingClaimData(schemaFundingClaim);
 
-            //act
-            fundingClaim.SetTitle();
+                var fundingClaim = new DataModels.FundingClaim(
+                    window,
+                    fundingClaimData,
+                    schemaFundingClaim.FundingClaimId,
+                    int.Parse(schemaFundingClaim.Ukprn),
+                    schemaFundingClaim.VersionNumber,
+                    schemaFundingClaim.ClaimTypeName.ToFundingClaimType(),
+                    schemaFundingClaim.Period,
+                    schemaFundingClaim.SubmissionDateTime,
+                    FundingClaimState.ReadyToReview);
+
+                //act
+                fundingClaim.SetTitle();
+            });
+
+            Assert.AreEqual("The period 16178's length is not 4 characters.", exception.Message);
         }
 
         [TestMethod, TestCategory("Unit")]
